@@ -1,7 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "prismjs/themes/prism-tomorrow.css";
 
 @custom-variant dark (&:is(.dark *));
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @theme inline {
   --color-background: var(--background);

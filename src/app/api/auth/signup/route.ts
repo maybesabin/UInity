@@ -1,15 +1,24 @@
 import connectToDb from "@/lib/db"
 import { handleError } from "@/lib/error"
-import { errorResponse, successResponse } from "@/lib/response"
+import { errorResponse } from "@/lib/response"
 import User from "@/models/User"
 import bcrypt from "bcrypt"
+import { NextResponse } from "next/server"
+
+interface SignupRequest {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    imageUrl?: string;
+}
 
 export async function POST(req: Request) {
     await connectToDb()
-    const { username, email, password } = await req.json()
+    const { name, username, email, password, imageUrl } = await req.json() as SignupRequest
 
     try {
-        if (!username || !email || !password) return errorResponse("Please provide all fields")
+        if (!username || !email || !password || !name) return errorResponse("Please provide all fields")
 
         const checkUsername = await User.findOne({ username })
         if (checkUsername) return errorResponse("User with this username already exists")
@@ -19,15 +28,28 @@ export async function POST(req: Request) {
 
         const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = new User({
+            ...(name && { name }),
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            ...(imageUrl && { imageUrl })
         })
 
+        const user = {
+            _id: newUser._id,
+            email: newUser.email,
+            username: newUser.username,
+            name: newUser.name,
+            ...(newUser.imageUrl && { imageUrl: newUser.imageUrl })
+        }
+
         await newUser.save()
-        return successResponse("Account created successfully")
+        return NextResponse.json({
+            message: "Account created successfully",
+            data: user,
+            status: 200
+        })
     } catch (err) {
         return handleError(err)
     }
-
 }

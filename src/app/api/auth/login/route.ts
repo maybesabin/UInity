@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             message: "Logged in successfully",
-            token
+            token,
         })
 
     } catch (err: unknown) {

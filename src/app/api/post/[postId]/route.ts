@@ -4,8 +4,9 @@ import { errorResponse, successResponse } from "@/lib/response";
 import { verifyToken } from "@/lib/verifyToken";
 import Post from "@/models/Post";
 import User from "@/models/User";
+import { NextRequest } from "next/server";
 
-export async function DELETE(req: Request, { params }: { params: { postId: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ postId: string }> }) {
     await connectToDb()
     try {
         const authHeader = req.headers.get("authorization")
@@ -16,7 +17,7 @@ export async function DELETE(req: Request, { params }: { params: { postId: strin
         const user = await User.findById(userId)
         if (!user) return errorResponse("User not found");
 
-        const { postId } = params;
+        const { postId } = await params;
 
         const post = await Post.findById(postId);
         if (!post) return errorResponse("Post not found");
@@ -32,7 +33,7 @@ export async function DELETE(req: Request, { params }: { params: { postId: strin
     }
 }
 
-export async function PUT(req: Request, { params }: { params: { postId: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ postId: string }> }) {
     await connectToDb()
     try {
         const authHeader = req.headers.get("authorization")
@@ -43,7 +44,7 @@ export async function PUT(req: Request, { params }: { params: { postId: string }
         const user = await User.findById(userId)
         if (!user) return errorResponse("User not found");
 
-        const { postId } = params;
+        const { postId } = await params;
 
         const post = await Post.findById(postId);
         if (!post) return errorResponse("Post not found")

@@ -1,5 +1,10 @@
 import jwt from "jsonwebtoken";
 
+interface JwtPayload {
+    id?: string;
+    _id?: string;
+}
+
 export function verifyToken(authHeader: string | null) {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         throw new Error("No or invalid authorization header");
@@ -12,5 +17,5 @@ export function verifyToken(authHeader: string | null) {
     if (!secret) throw new Error("JWT_SECRET is not defined");
 
     const decoded = jwt.verify(token, secret);
-    return (decoded as any).id || (decoded as any)._id;
+    return (decoded as JwtPayload).id || (decoded as JwtPayload)._id;
 }

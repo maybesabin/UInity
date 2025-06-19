@@ -1,10 +1,14 @@
 import { SiZcool } from "react-icons/si"
 import { Button } from "./ui/button"
-import { LuPlus } from "react-icons/lu"
+import { LuLogOut, LuPlus } from "react-icons/lu"
 import placeholder from "../assets/placeholder.png"
 import Image from "next/image"
+import { useAuthStore } from "@/store/useAuthStore"
+import LoginDialog from "./login-dialog"
+import SignupDialog from "./signup-dialog"
 
-const navbar = () => {
+const Navbar = () => {
+    const { isLoggedIn, logout, user } = useAuthStore()
     return (
         <header className="w-full fixed top-0 left-0 z-50 bg-background border-b-2">
             <div className="flex items-center justify-center w-full">
@@ -17,22 +21,37 @@ const navbar = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant={"secondary"}
-                            className="flex items-center gap-2"
-                        >
-                            <LuPlus />
-                            <span>Share component</span>
-                        </Button>
-                        <div className="rounded-full size-9 border p-1.5 border-neutral-600">
-                            <Image
-                                className="object-cover w-full h-full"
-                                height={600}
-                                width={600}
-                                src={placeholder}
-                                alt={"Placeholder image"}
-                            />
-                        </div>
+                        {!isLoggedIn ?
+                            <>
+                                <SignupDialog />
+                                <LoginDialog />
+                            </>
+                            :
+                            <>
+                                <Button
+                                    variant={"secondary"}
+                                    className="flex items-center gap-2"
+                                >
+                                    <LuPlus />
+                                    <span className="md:flex hidden">Share component</span>
+                                </Button>
+                                <Image
+                                    className="object-cover size-8 rounded-full"
+                                    height={600}
+                                    width={600}
+                                    src={user?.imageUrl || placeholder}
+                                    alt={"Placeholder image"}
+                                />
+                                <Button
+                                    onClick={logout}
+                                    variant={"secondary"}
+                                    className="flex items-center gap-2"
+                                >
+                                    <LuLogOut />
+                                    Logout
+                                </Button>
+                            </>
+                        }
                     </div>
                 </div>
             </div>
@@ -40,4 +59,4 @@ const navbar = () => {
     )
 }
 
-export default navbar
+export default Navbar
